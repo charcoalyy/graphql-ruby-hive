@@ -1,4 +1,5 @@
-# GraphQL Hive: `graphql-ruby` integration 
+# GraphQL Hive: `graphql-ruby` integration
+
 [![CI Suite](https://github.com/charlypoly/graphql-ruby-hive/actions/workflows/ci.yml/badge.svg)](https://github.com/charlypoly/graphql-ruby-hive/actions)
 [![Gem Version](https://badge.fury.io/rb/graphql-hive.svg)](https://rubygems.org/gems/graphql-hive)
 
@@ -6,27 +7,23 @@
   <img src="cover.png" width="500" alt="GraphQL Hive" />
 </p>
 
-
-
 [GraphQL Hive](https://graphql-hive.com/) provides all the tools to get visibility of your GraphQL architecture at all stages, from standalone APIs to composed schemas (Federation, Stitching):
+
 - **Schema Registry** with custom breaking changes detection
 - **Monitoring** of RPM, latency, error rate, and more
 - **Integrations** with your favorite tools (Slack, Github Actions, and more)
 
-
 <br/>
 
-----
+---
 
 <br/>
-
 
 # Getting started
 
-
 ## 0. Get your Hive token
 
-If you are using Hive as a service, please refer to our documentation: https://docs.graphql-hive.com/features/tokens.
+If you are using Hive as a service, please refer to our documentation: <https://docs.graphql-hive.com/features/tokens>.
 
 ## 1. Install the `graphql-hive` gem
 
@@ -106,9 +103,9 @@ end
 **You are all set! 🚀**
 
 When deploying or starting up your GraphQL API, `graphql-hive` will immediately:
+
 - publish the schema to the Hive registry
 - forward the operations metrics to Hive
-
 
 <br/>
 
@@ -120,22 +117,19 @@ You should now see operations information (RPM, error rate, queries performed) o
   <img src="operations-dashboard.png" width="500" alt="GraphQL Hive" />
 </p>
 
-
 <br/>
-
 
 ## 5. Going further: use the Hive Github app
 
 Stay on top of your GraphQL Schema changes by installing the Hive Github Application and enabling Slack notifications about breaking changes:
 
-https://docs.graphql-hive.com/features/integrations#github
+<https://docs.graphql-hive.com/features/integrations#github>
 
 <br/>
 
-----
+---
 
 <br/>
-
 
 # Configuration
 
@@ -156,24 +150,27 @@ class MySchema < GraphQL::Schema
       debug: false, # verbose logs
       logger: MyLogger.new,
       endpoint: 'app.graphql-hive.com',
-      port: 80, 
+      port: 80,
       buffer_size: 50, # forward the operations data to Hive every 50 requests
 
-      # to sample every distinct operation at least once, set `at_least_once_sampling_keygen` to `true`
-      # alternatively, pass an optional proc to use custom keys to distinguish between distinct operations
-      at_least_once_sampling_keygen: proc { |context| context.operation_name }
+      at_least_once_sampling: {
+        enabled: false, # set to true to sample every distinct operation at least once
+      # pass an optional proc to use custom keys to distinguish between distinct operations
+        keygen: proc { |context| context.operation_name }
+      }
 
       # NOTE: this field overrides `collect_usage_sampling_rate`
       # pass an optional proc to `collect_usage_sampler` to assign custom sampling rates
       collect_usage_sampler: proc { |context| context.operation_name.includes?('someQuery') 1 : 0.2 }
 
+
       report_schema: true,  # publish schema to Hive
       # mandatory if `report_schema: true`
-      reporting: { 
+      reporting: {
         # mandatory members of `reporting`
         author: 'Author of the latest change',
         commit: 'git sha or any identifier',
-        # optional members of `reporting  
+        # optional members of `reporting
         service_name: '',
         service_url: '',
       },

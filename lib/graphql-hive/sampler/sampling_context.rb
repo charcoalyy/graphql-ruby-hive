@@ -5,6 +5,12 @@ module GraphQL
     module Sampler
       # Helper methods for sampling
       module SamplingContext
+        DEFAULT_SAMPLE_KEY = proc { |sample_context|
+          md5 = Digest::MD5.new
+          md5.update sample_context[:document].to_query_string
+          md5.hexdigest
+        }
+
         private
 
         def get_sample_context(operation)
@@ -25,31 +31,6 @@ module GraphQL
             operation_name: operation_name,
             document: document,
             context_value: context_value
-          }
-        end
-
-        def get_sample_rate(sampler, sample_context)
-          sample_rate = sampler.call(sample_context)
-          raise StandardError, 'Sampler must return a number' unless sample_rate.is_a?(Numeric)
-
-          sample_rate
-        rescue StandardError => e
-          raise StandardError, "Error calling sampler: #{e}"
-        end
-
-        def get_sample_key(sampling_keygen, sample_context)
-          return default_sample_key.call(sample_context) if @at_least_once_sampling_keygen == true
-
-          sampling_keygen.call(sample_context).to_s
-        rescue StandardError => e
-          raise StandardError, "Error getting key for sample: #{e}"
-        end
-
-        def default_sample_key
-          proc { |sample_context|
-            md5 = Digest::MD5.new
-            md5.update sample_context[:document].to_query_string
-            md5.hexdigest
           }
         end
       end
